@@ -1,6 +1,6 @@
 (function() {
   "use strict";
-   
+
      function elt(tagname, cls /*, ... elts*/) {
     var e = document.createElement(tagname);
     if (cls) e.className = cls;
@@ -11,7 +11,7 @@
     }
     return e;
   }
-  
+
   function showType(showTooltipFor, d, e, node, state, cm) {
   	var ts = CodeMirror.tern.getServer(cm);
   	var pos = d.pos;
@@ -24,30 +24,32 @@
           tip.appendChild(document.createTextNode(" — " + data.doc));
         if (data.url) {
           tip.appendChild(document.createTextNode(" "));
-          tip.appendChild(elt("a", null, "[docs]")).href = data.url;
+          var child = tip.appendChild(elt("a", null, "[docs]"));
+          child.href = data.url;
+          child.target = "_blank";
         }
  		showTooltipFor(e, tip, node, state, cm);
     }, pos);
-    
+
   }
-  
+
   function getTextHover(cm, data) {
   	if (!data)
       return;
     //var server = CodeMirror.tern.getServer(cm);
     //var token = data.token, html = '';
     return showType;
-    
+
     /*server.showType(cm, data.pos);
    	if (html === '')
 	  return null;
 	var result = document.createElement('div');
 	result.innerHTML = html;
-	return result;*/    
+	return result;*/
   }
 
   CodeMirror.registerHelper("textHover", "javascript", function(cm, data) {
     return getTextHover(cm, data);
   });
-  
+
 })();

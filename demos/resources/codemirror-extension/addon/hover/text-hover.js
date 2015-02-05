@@ -13,12 +13,12 @@
     document.body.appendChild(tt);
 
     function position(e) {
-      if (!tt.parentNode)
-        return CodeMirror.off(document, "mousemove", position);
+      // if (!tt.parentNode)
+      //   return CodeMirror.off(document, "mousemove", position);
       tt.style.top = Math.max(0, e.clientY - tt.offsetHeight - 5) + "px";
       tt.style.left = (e.clientX + 5) + "px";
     }
-    CodeMirror.on(document, "mousemove", position);
+    // CodeMirror.on(document, "mousemove", position);
     position(e);
     if (tt.style.opacity != null)
       tt.style.opacity = 1;
@@ -41,15 +41,27 @@
 
   function showTooltipFor(e, content, node, state, cm) {
     var tooltip = showTooltip(e, content);
-    function hide() {
-      CodeMirror.off(node, "mouseout", hide);
-      CodeMirror.off(node, "click", hide);
-      node.className = node.className.replace(HOVER_CLASS, "");
-      if (tooltip) {
-        hideTooltip(tooltip);
-        tooltip = null;
-      }
-      cm.removeKeyMap(state.keyMap);
+    var mouseOnTooltip = false;
+    CodeMirror.on(tooltip, "mousemove", function() {
+      mouseOnTooltip = true;
+    });
+    CodeMirror.on(tooltip, "mouseout", function() {
+      mouseOnTooltip = false;
+      maybeHide();
+    });
+    function maybeHide() {
+      setTimeout(function() {
+        if (!mouseOnTooltip) {
+          CodeMirror.off(node, "mouseout", maybeHide);
+          CodeMirror.off(node, "click", maybeHide);
+          node.className = node.className.replace(HOVER_CLASS, "");
+          if (tooltip) {
+            hideTooltip(tooltip);
+            tooltip = null;
+          }
+          cm.removeKeyMap(state.keyMap);
+        }
+      }, 1000);
     }
     var poll = setInterval(function() {
       if (tooltip)
@@ -57,16 +69,17 @@
           if (n == document.body)
             return;
           if (!n) {
-            hide();
+            maybeHide();
             break;
           }
         }
       if (!tooltip)
         return clearInterval(poll);
     }, 400);
-    CodeMirror.on(node, "mouseout", hide);
-    CodeMirror.on(node, "click", hide);
-    state.keyMap = {Esc: hide};
+    setTimeout(maybeHide, 2000);
+    CodeMirror.on(node, "mousemove", maybeHide);
+    // CodeMirror.on(node, "click", maybeHide);
+    state.keyMap = {Esc: maybeHide};
     cm.addKeyMap(state.keyMap);
   }
 
@@ -118,10 +131,10 @@
       var content = state.options.getTextHover(cm, data, e);
       if (content) {
         node.className += HOVER_CLASS;
-        if (typeof content == 'function') 
+        if (typeof content == 'function')
 	      content(showTooltipFor, data, e, node, state, cm);
-        else 
-          showTooltipFor(e, content, node, state, cm);        
+        else
+          showTooltipFor(e, content, node, state, cm);
       }
     }
   }
