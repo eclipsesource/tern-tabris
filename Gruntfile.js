@@ -1,6 +1,8 @@
 /*global module:false*/
 module.exports = function(grunt) {
 
+  var currentTimestamp = Date.now();
+
   grunt.initConfig({
     pkg: grunt.file.readJSON("package.json"),
     clean: ["dist"],
@@ -34,7 +36,7 @@ module.exports = function(grunt) {
           "codemirror/addon/hint/context-autocomplete-hint.js",
           "tabris.js"
         ],
-        dest: "dist/<%= pkg.name %>-connect.js"
+        dest: "dist/<%= pkg.name %>-connect-" + currentTimestamp + ".js"
       },
       css: {
         src: [
@@ -46,13 +48,13 @@ module.exports = function(grunt) {
           "node_modules/codemirror-extension/addon/hint/templates-hint.css",
           "node_modules/codemirror-extension/addon/hover/text-hover.css"
         ],
-        dest: "dist/<%= pkg.name %>-connect.css"
+        dest: "dist/<%= pkg.name %>-connect-" + currentTimestamp + ".css"
       }
     },
     uglify: {
       js: {
         src: "<%= concat.js.dest %>",
-        dest: "dist/<%= pkg.name %>-connect.min.js"
+        dest: "dist/<%= pkg.name %>-connect-" + currentTimestamp + ".min.js"
       }
     }
   });
