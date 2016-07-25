@@ -58,7 +58,7 @@ module.exports = {
     },
     Tab: {
       "name" : "animate",
-      "type" : "fn(animationProperties: ?, options: ?)",
+      "type" : "fn(animationProperties: ?, options: ?) -> Promise",
       "origin" : "tabris"
     }
   }

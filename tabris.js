@@ -323,7 +323,7 @@
       "!propertyTypes": {
         "Bounds" : {
           "!doc": "Widget bounds are represented as an object with the following properties:",
-          "!url": "https://tabrisjs.com/documentation/1.8/types#bounds",
+          "!url": "https://tabrisjs.com/documentation/1.9/types#bounds",
           "left" : {
             "!type": "number",
             "!doc": "The horizontal offset from the parent's left edge in dip"
@@ -343,17 +343,17 @@
         },
         "Color": {
           "!doc": "Colors are specified as strings using one of the following formats:",
-          "!url": "https://tabrisjs.com/documentation/1.8/types#color"
+          "!url": "https://tabrisjs.com/documentation/1.9/types#color"
         },
         "Font": {
           "!doc": "Fonts are specified as strings using the shorthand syntax known from CSS. The font family may be omitted, in this case the default system font will be used.",
-          "!url": "https://tabrisjs.com/documentation/1.8/types#font"
+          "!url": "https://tabrisjs.com/documentation/1.9/types#font"
         },
         "CellType": {},
         "ItemHeight": {},
         "Image": {
           "!doc": "Image object associated with the element.",
-          "!url": "https://tabrisjs.com/documentation/1.8/types#image",
+          "!url": "https://tabrisjs.com/documentation/1.9/types#image",
           "src": {
             "!type": "string",
             "!doc": "Image path or URL."
@@ -373,7 +373,7 @@
         },
         "LayoutData": {
           "!doc": "Used to define how a widget should be arranged within its parent.",
-          "!url": "https://tabrisjs.com/documentation/1.8/types#layoutdata",
+          "!url": "https://tabrisjs.com/documentation/1.9/types#layoutdata",
           "left": {
             "!type": "!propertyTypes.margin",
             "!doc": "The position of the widget's left edge relative to the parent or a sibling widget."
@@ -413,7 +413,7 @@
         },
         "Transformation": {
           "!doc": "Transformations are specified as an object with the following properties:",
-          "!url": "https://tabrisjs.com/documentation/1.8/types#transformation",
+          "!url": "https://tabrisjs.com/documentation/1.9/types#transformation",
           "rotation": {
             "!type": "number",
             "!doc": "Clock-wise rotation in radians."
@@ -437,19 +437,19 @@
         },
         "Selector": {
           "!doc": "Selectors are used to filter a given list of widgets. It can be function returning a boolean for a given widget. However, more commonly a selector is a string that may either reference a widgets type (e.g. \"Button\", \"TextView\"), or its id (\"#myButton\", \"#myTextView\").",
-          "!url": "https://tabrisjs.com/documentation/1.8/selector"
+          "!url": "https://tabrisjs.com/documentation/1.9/selector"
         },
         "margin": {
           "!doc": "Distance to a parent's or sibling's opposing edge in one of these formats: offset, percentage, Widget, \"selector\", \"prev()\", \"percentage offset\", \"selector offset\", \"prev() offset\", [Widget, offset], [percentage, offset], [selector, offset], [\"prev()\", offset]",
-          "!url": "https://tabrisjs.com/documentation/1.8/types#margin"
+          "!url": "https://tabrisjs.com/documentation/1.9/types#margin"
         },
         "dimension": {
           "!doc": "A positive float, or 0, representing device independent pixels.",
-          "!url": "https://tabrisjs.com/documentation/1.8/types#dimension"
+          "!url": "https://tabrisjs.com/documentation/1.9/types#dimension"
         },
         "offset": {
           "!doc": "A positive or negative float, or 0, representing device independent pixels.",
-          "!url": "https://tabrisjs.com/documentation/1.8/types#offset"
+          "!url": "https://tabrisjs.com/documentation/1.9/types#offset"
         }
       },
       "!properties" : {
@@ -704,13 +704,17 @@
             "!type": "bool",
             "!doc": "Specifies whether the TextInput can be edited."
           },
+          "focused" : {
+            "!type" : "bool",
+            "!doc" : "Reflects whether this widget has the keyboard focus. Setting this property to \"true\" will focus the widget and open the virtual keyboard, setting it to \"false\" will remove the focus and hide the virtual keyboard."
+          },
           "keyboard": {
             "!type": "string",
-            "!doc": "Selects the keyboard type to use for editing this widget. Supported values: \"ascii\", \"decimal\", \"email\", \"number\", \"numbersAndPunctuation\", \"phone\", \"url\", \"default\", "
+            "!doc": "Selects the keyboard type to use for editing this widget. Has no effect when \"type\" is set to \"multiline\". Supported values: \"ascii\", \"decimal\", \"email\", \"number\", \"numbersAndPunctuation\", \"phone\", \"url\", \"default\"."
           },
           "message": {
             "!type": "string",
-            "!doc": "A hint text that is displayed when the input field is empty."
+            "!doc": "A hint text that is displayed when the input field is empty. Does not apply on iOS when `type` is set to \"multiline\"."
           },
           "text": {
             "!type": "string",
@@ -824,7 +828,7 @@
           },
           "tintColor" : {
             "!type" : "!propertyTypes.Color",
-            "!doc" : "A color to change the image appearance. All opaque parts of the image will be tinted with the given color. Set to \"null\" to remove the effect."
+            "!doc" : "A color to change the image appearance. All opaque parts of the image will be tinted with the given color. Set to \"null\" to remove the effect. Available on iOS and Android 5.0+."
           }
         },
         "ProgressBarProperties": {
@@ -906,6 +910,10 @@
             "!type" : "!propertyTypes.Image",
             "!doc" : "Image shown on the tab button."
           },
+          "selectedImage" : {
+            "!type" : "!propertyTypes.Image",
+            "!doc" : "An image to be displayed on the currently active tab."
+          },
           "title" : {
             "!type" : "string",
             "!doc" : "Text title of the tab."
@@ -963,10 +971,19 @@
       "!events": {
         "AppEvents": {
           "pause": {
-            "!doc": "Fired before the application goes into hibernation. Parameter: \"app\"."
+            "!doc": "Fired when the app is not the interaction target of the user anymore. Usually preceded by \"resume\". Parameter: \"app\"."
           },
           "resume": {
-            "!doc": "Fired after the application returned from hibernation. Parameter: \"app\"."
+            "!doc": "Fired when the app is visible and ready to interact with the user. The event is preceded by either \"foreground\" (the app becomes visible again) or \"pause\" (the app regains ability to interact with user). Parameter: \"app\"."
+          },
+          "background": {
+            "!doc": "Fired when the app becomes invisible. Either because the user has another app in the foreground or he returned to the home screen. Parameter: \"app\"."
+          },
+          "foreground": {
+            "!doc": "Fired when the app becomes visible. The event is only fired after the app has been brought to the background. Not during app startup. Parameter: \"app\"."
+          },
+          "terminate": {
+            "!doc": "Fired when the app is being destroyed. After this callback no more interaction with the app is possible. Parameter: \"app\"."
           },
           "backnavigation": {
             "!doc": "Fired when the back button is pressed on Android. To suppress the default back navigation behavior, call \"event.preventDefault()\". Parameters: \"app\", \"event\"."
@@ -1057,6 +1074,14 @@
           },
           "select": {
             "!doc": "Fired when the check box is checked or unchecked. Parameters: \"widget\", \"selection\", \"options\"."
+          }
+        },
+        "DrawerEvents": {
+          "open": {
+            "!doc": "Fired when the drawer is opened and has reached its resting position. Parameter: \"widget\"."
+          },
+          "close": {
+            "!doc": "Fired when the drawer is closed and has reached its resting position. Parameter: \"widget\"."
           }
         },
         "ImageViewEvents": {
@@ -1181,6 +1206,9 @@
           },
           "navigate": {
             "!doc": "Fired when the WebView is about to navigate to a new URL. Listeners can intercept the navigation by calling \"event.preventDefault()\". Parameters: \"widget\", \"event\"."
+          },
+          "message": {
+            "!doc": "Fired when a web message has been sent via \"window.parent.postMessage(message, targetOrigin)\" from inside the WebView. The events \"data\" property contains the message sent, which currently has to be a string. Parameters: \"widget\", \"event\"."
           }
         }
       },
@@ -1220,7 +1248,7 @@
         },
         "Action" : {
           "!type" : "fn()",
-          "!url" : "https://tabrisjs.com/documentation/1.8/api/Action",
+          "!url" : "https://tabrisjs.com/documentation/1.9/api/Action",
           "!doc" : "An executable item that is integrated in the application's navigation menu. Add a listener on \"select\" to implement the action.",
           "prototype" : {
             "!proto" : "types.Widget.prototype"
@@ -1228,7 +1256,7 @@
         },
         "ActivityIndicator" : {
           "!type" : "fn()",
-          "!url" : "https://tabrisjs.com/documentation/1.8/api/ActivityIndicator",
+          "!url" : "https://tabrisjs.com/documentation/1.9/api/ActivityIndicator",
           "!doc" : "A widget representing a spinning indicator for indeterminate loading/processing time.",
           "prototype" : {
             "!proto" : "types.Widget.prototype"
@@ -1240,7 +1268,7 @@
             "get" : {
               "!type" : "fn(name: string) -> !custom:tabris_Proxy_get",
               "!doc" : "Gets the current value of the given property.",
-              "!url" : "https://tabrisjs.com/documentation/1.8/api/Properties#getproperty",
+              "!url" : "https://tabrisjs.com/documentation/1.9/api/Properties#getproperty",
               "!data": {
                 "!lint": "tabrisGet_lint",
                 "!guess-type": "tabrisGet_guessType"
@@ -1250,7 +1278,7 @@
               "!type" : "fn(name: string, value: ?) -> !this",
               "!effects" : ["custom tabris_Proxy_set"],
               "!doc" : "Sets the given property. Supports chaining.",
-              "!url" : "https://tabrisjs.com/documentation/1.8/api/Properties#setproperty-value",
+              "!url" : "https://tabrisjs.com/documentation/1.9/api/Properties#setproperty-value",
               "!data": {
                 "!lint": "tabrisSet_lint"
               }
@@ -1259,7 +1287,7 @@
               "!type" : "fn(type: string, listener: fn(), context?: ?) -> !this",
               "!effects" : [ "custom tabris_Proxy_eventtype", "call !1 this=!this" ],
               "!doc" : "Adds a listener to the list of functions to be notified when event is fired. If the context parameter is not present, the listener will be called in the context of this object. Supports chaining.",
-              "!url" : "https://tabrisjs.com/documentation/1.8/api/Events#onevent-listener-context",
+              "!url" : "https://tabrisjs.com/documentation/1.9/api/Events#onevent-listener-context",
               "!data": {
                 "!lint": "tabrisEvent_lint"
               }
@@ -1268,7 +1296,7 @@
               "!type" : "fn(type: string, listener: fn(), context?: ?) -> !this",
               "!effects" : [ "custom tabris_Proxy_eventtype", "call !1 this=!this" ],
               "!doc" : "Same as on, but removes the listener after it has been invoked by an event. Supports chaining.",
-              "!url" : "https://tabrisjs.com/documentation/1.8/api/Events#onceevent-listener-context",
+              "!url" : "https://tabrisjs.com/documentation/1.9/api/Events#onceevent-listener-context",
               "!data": {
                 "!lint": "tabrisEvent_lint"
               }
@@ -1277,7 +1305,7 @@
               "!type" : "fn(event?: string, listener?: fn(), context?: ?) -> !this",
               "!effects" : [ "custom tabris_Proxy_eventtype", "call !1 this=!this" ],
               "!doc" : "Removes all occurrences of listener that are bound to event and context from this widget. Supports chaining.",
-              "!url" : "https://tabrisjs.com/documentation/1.8/api/Events#offevent-listener-context",
+              "!url" : "https://tabrisjs.com/documentation/1.9/api/Events#offevent-listener-context",
               "!data": {
                 "!lint": "tabrisEvent_lint"
               }
@@ -1305,8 +1333,8 @@
               "!doc": "The exact string that was used to create this widget using the \"tabris.create\" method."
             },
             "animate" : {
-              "!type" : "fn(animationProperties: ?, options: ?)",
-              "!doc" : "Starts an animation that transforms the given properties from their current values to the given ones. \n\nSupported properties are \"transform\" and \"opacity\". \n\nSupported options are: \n - \"delay\" (time until the animation starts in ms, defaults to \"0\") \n - \"duration\" (in ms) \n - \"easing\" (one of \"linear\", \"ease-in\", \"ease-out\", \"ease-in-out\") \n - \"repeat\" (number of times to repeat the animation, defaults to \"0\") \n - \"reverse\" (\"true\" to alternate the direction of the animation on every repeat) \n - \"name\" (no effect, but will be given in animation events)"
+              "!type" : "fn(animationProperties: ?, options: ?) -> +Promise",
+              "!doc" : "Starts an animation that transforms the given properties from their current values to the given ones. \n\nSupported properties are \"transform\" and \"opacity\". \n\nSupported options are: \n - \"delay\" (time until the animation starts in ms, defaults to \"0\") \n - \"duration\" (in ms) \n - \"easing\" (one of \"linear\", \"ease-in\", \"ease-out\", \"ease-in-out\") \n - \"repeat\" (number of times to repeat the animation, defaults to \"0\") \n - \"reverse\" (\"true\" to alternate the direction of the animation on every repeat) \n - \"name\" (no effect, but will be given in animation events). \n\nReturns a promise that is resolved once the animation is completed and is rejected if the animation is aborted."
             },
             "appendTo" : {
               "!type" : "fn(parent: +types.Widget) -> !this",
@@ -1357,7 +1385,7 @@
         "WidgetCollection": {
           "!type" : "fn()",
           "!doc" : "A \"WidgetCollection\" is an array-like object representing a set of widgets, as returned by the widget methods \"children\" and \"find\".",
-          "!url": "https://tabrisjs.com/documentation/1.8/api/WidgetCollection",
+          "!url": "https://tabrisjs.com/documentation/1.9/api/WidgetCollection",
           "prototype" : {
             "children": {
               "!type" : "fn(selector?: !propertyTypes.Selector) -> !this",
@@ -1419,7 +1447,7 @@
         },
         "Page" : {
           "!type" : "fn()",
-          "!url": "https://tabrisjs.com/documentation/1.8/api/Page",
+          "!url": "https://tabrisjs.com/documentation/1.9/api/Page",
           "!doc" : "Pages contain an application's UI.",
           "prototype" : {
             "!proto" : "types.Composite.prototype",
@@ -1435,7 +1463,7 @@
         },
         "Button" : {
           "!type" : "fn()",
-          "!url": "https://tabrisjs.com/documentation/1.8/api/Button",
+          "!url": "https://tabrisjs.com/documentation/1.9/api/Button",
           "!doc" : "A push button. Can contain a text or an image.",
           "prototype" : {
             "!proto" : "types.Widget.prototype"
@@ -1443,7 +1471,7 @@
         },
         "TextView" : {
           "!type" : "fn()",
-          "!url": "https://tabrisjs.com/documentation/1.8/api/TextView",
+          "!url": "https://tabrisjs.com/documentation/1.9/api/TextView",
           "!doc" : "A widget to display a text. For images, use ImageView.",
           "prototype" : {
             "!proto" : "types.Widget.prototype"
@@ -1451,7 +1479,7 @@
         },
         "TextInput" : {
           "!type" : "fn()",
-          "!url": "https://tabrisjs.com/documentation/1.8/api/TextInput",
+          "!url": "https://tabrisjs.com/documentation/1.9/api/TextInput",
           "!doc" : "A widget that allows to enter text.",
           "prototype" : {
             "!proto" : "types.Widget.prototype"
@@ -1459,7 +1487,7 @@
         },
         "CheckBox" : {
           "!type" : "fn()",
-          "!url": "https://tabrisjs.com/documentation/1.8/api/CheckBox",
+          "!url": "https://tabrisjs.com/documentation/1.9/api/CheckBox",
           "!doc" : "A check box widget.",
           "prototype" : {
             "!proto" : "types.Widget.prototype"
@@ -1467,7 +1495,7 @@
         },
         "Switch" : {
           "!type" : "fn()",
-          "!url": "https://tabrisjs.com/documentation/1.8/api/Switch",
+          "!url": "https://tabrisjs.com/documentation/1.9/api/Switch",
           "!doc" : "A switch widget that can be toggled.",
           "prototype" : {
             "!proto" : "types.Widget.prototype"
@@ -1475,7 +1503,7 @@
         },
         "CollectionView" : {
           "!type" : "fn()",
-          "!url": "https://tabrisjs.com/documentation/1.8/api/CollectionView",
+          "!url": "https://tabrisjs.com/documentation/1.9/api/CollectionView",
           "!doc" : "A scrollable list that displays data items in cells, one per row. Cells are created on demand and filled with widgets in the \"initializeCell\" callback. When a data item is mapped to a cell, it is set as the property \"item\" and the cell receives an \"change:item\" event.",
           "prototype" : {
             "!proto" : "types.Widget.prototype",
@@ -1499,7 +1527,7 @@
         },
         "Picker" : {
           "!type" : "fn()",
-          "!url": "https://tabrisjs.com/documentation/1.8/api/Picker",
+          "!url": "https://tabrisjs.com/documentation/1.9/api/Picker",
           "!doc" : "A widget with a drop-down list of items to choose from.",
           "prototype" : {
             "!proto" : "types.Widget.prototype"
@@ -1507,7 +1535,7 @@
         },
         "PageSelector" : {
           "!type" : "fn()",
-          "!url": "https://tabrisjs.com/documentation/1.8/api/PageSelector",
+          "!url": "https://tabrisjs.com/documentation/1.9/api/PageSelector",
           "!doc" : "A CollectionView that contains all top-level pages and allows to open them. New top-level pages are added dynamically.",
           "prototype" : {
             "!proto" : "types.CollectionView.prototype"
@@ -1515,7 +1543,7 @@
         },
         "SearchAction" : {
           "!type" : "fn()",
-          "!url": "https://tabrisjs.com/documentation/1.8/api/SearchAction",
+          "!url": "https://tabrisjs.com/documentation/1.9/api/SearchAction",
           "!doc" : "An action that displays a search text field with dynamic proposals when selected. Add a listener on \"select\" to implement the action. On \"input\", you may set a list of \"proposals\".",
           "prototype" : {
             "!proto" : "types.Action.prototype"
@@ -1523,7 +1551,7 @@
         },
         "Composite" : {
           "!type" : "fn()",
-          "!url": "https://tabrisjs.com/documentation/1.8/api/Composite",
+          "!url": "https://tabrisjs.com/documentation/1.9/api/Composite",
           "!doc" : "An empty widget that can contain other widgets.",
           "prototype" : {
             "!proto" : "types.Widget.prototype",
@@ -1535,7 +1563,7 @@
         },
         "Canvas" : {
           "!type" : "fn()",
-          "!url": "https://tabrisjs.com/documentation/1.8/api/Canvas",
+          "!url": "https://tabrisjs.com/documentation/1.9/api/Canvas",
           "!doc" : "Canvas is a widget that can be used to draw graphics using a canvas context. Canvas context is a subset of the HTML5 \"CanvasRenderingContext2D\".",
           "prototype" : {
             "!proto" : "types.Composite.prototype",
@@ -1547,7 +1575,7 @@
         },
         "CanvasContext": {
           "!type" : "fn()",
-          "!url": "https://tabrisjs.com/documentation/1.8/api/Canvas",
+          "!url": "https://tabrisjs.com/documentation/1.9/api/Canvas",
           "prototype": {
             "save": "fn()",
             "restore": "fn()",
@@ -1583,7 +1611,7 @@
         },
         "Drawer" : {
           "!type" : "fn()",
-          "!url": "https://tabrisjs.com/documentation/1.8/api/Drawer",
+          "!url": "https://tabrisjs.com/documentation/1.9/api/Drawer",
           "!doc" : "A navigation drawer that can be swiped in from the left edge of the screen. Can contain any kind of widgets. It may be useful to include a \"PageSelector\" that displays all top-level pages.",
           "prototype" : {
             "!proto" : "types.Composite.prototype",
@@ -1599,7 +1627,7 @@
         },
         "ImageView" : {
           "!type" : "fn()",
-          "!url": "https://tabrisjs.com/documentation/1.8/api/ImageView",
+          "!url": "https://tabrisjs.com/documentation/1.9/api/ImageView",
           "!doc" : "A widget to display an image.",
           "prototype" : {
             "!proto" : "types.Widget.prototype"
@@ -1607,7 +1635,7 @@
         },
         "ProgressBar" : {
           "!type" : "fn()",
-          "!url": "https://tabrisjs.com/documentation/1.8/api/ProgressBar",
+          "!url": "https://tabrisjs.com/documentation/1.9/api/ProgressBar",
           "!doc" : "A widget representing a numeric value as a horizontal bar with a growing indicator.",
           "prototype" : {
             "!proto" : "types.Widget.prototype"
@@ -1615,7 +1643,7 @@
         },
         "RadioButton" : {
           "!type" : "fn()",
-          "!url": "https://tabrisjs.com/documentation/1.8/api/RadioButton",
+          "!url": "https://tabrisjs.com/documentation/1.9/api/RadioButton",
           "!doc" : "A radio button. Selecting a radio button deselects all its siblings (i.e. all radio buttons within the same parent).",
           "prototype" : {
             "!proto" : "types.Widget.prototype"
@@ -1623,7 +1651,7 @@
         },
         "Slider" : {
           "!type" : "fn()",
-          "!url": "https://tabrisjs.com/documentation/1.8/api/Slider",
+          "!url": "https://tabrisjs.com/documentation/1.9/api/Slider",
           "!doc" : "A widget representing a numeric value as an movable indicator on a horizontal line. Known Issues: Selection event is only fired after indicator is released.",
           "prototype" : {
             "!proto" : "types.Widget.prototype"
@@ -1631,7 +1659,7 @@
         },
         "TabFolder" : {
           "!type" : "fn()",
-          "!url": "https://tabrisjs.com/documentation/1.8/api/TabFolder",
+          "!url": "https://tabrisjs.com/documentation/1.9/api/TabFolder",
           "!doc" : "A widget that can switch between tabs. Only children of type \"Tab\" are supported. Since the TabFolder does not compute its own size, the width and height must be defined by the respective layout properties (e.g. either \"width\" or \"left\" and \"right\" must be specified).",
           "prototype" : {
             "!proto" : "types.Widget.prototype"
@@ -1639,7 +1667,7 @@
         },
         "Tab" : {
           "!type" : "fn()",
-          "!url": "https://tabrisjs.com/documentation/1.8/api/Tab",
+          "!url": "https://tabrisjs.com/documentation/1.9/api/Tab",
           "!doc" : "A container representing a single tab of the TabFolder widget.",
           "prototype" : {
             "!proto" : "types.Composite.prototype"
@@ -1647,7 +1675,7 @@
         },
         "ToggleButton" : {
           "!type" : "fn()",
-          "!url": "https://tabrisjs.com/documentation/1.8/api/ToggleButton",
+          "!url": "https://tabrisjs.com/documentation/1.9/api/ToggleButton",
           "!doc" : "A push button that \"snaps in\", i.e. it is selected when pressed and deselected when pressed again.",
           "prototype" : {
             "!proto" : "types.Widget.prototype"
@@ -1655,7 +1683,7 @@
         },
         "ScrollView" : {
           "!type" : "fn()",
-          "!url": "https://tabrisjs.com/documentation/1.8/api/ScrollView",
+          "!url": "https://tabrisjs.com/documentation/1.9/api/ScrollView",
           "!doc" : "A composite that allows its content to overflow either vertically (default) or horizontally. Since the ScrollView does not compute its own size, the width and height must be defined by the respective layout properties (e.g. either \"width\" or \"left\" and \"right\" must be specified).",
           "prototype" : {
             "!proto" : "types.Composite.prototype"
@@ -1663,7 +1691,7 @@
         },
         "Video" : {
           "!type" : "fn()",
-          "!url": "https://tabrisjs.com/documentation/1.8/api/Video",
+          "!url": "https://tabrisjs.com/documentation/1.9/api/Video",
           "!doc" : "A widget that plays a video from a URL.",
           "prototype" : {
             "!proto" : "types.Widget.prototype"
@@ -1671,10 +1699,14 @@
         },
         "WebView" : {
           "!type" : "fn()",
-          "!url": "https://tabrisjs.com/documentation/1.8/api/WebView",
+          "!url": "https://tabrisjs.com/documentation/1.9/api/WebView",
           "!doc" : "A widget that can display a web page. Known Issues: Having multiple instances of this widget on screen may not work.",
           "prototype" : {
-            "!proto" : "types.Widget.prototype"
+            "!proto" : "types.Widget.prototype",
+            "postMessage" : {
+              "!type" : "fn(message: string, targetOrigin: string) -> !this",
+              "!doc" : "Posts a web message to the underlying \"window\" object of the WebView. The website in the \"WebView\" can register for the message in the following fashion: \"window.addEventListener('message', callbackFunction)\". For more information see \"Window.postMessage()\" (https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) API."
+            },
           }
         }
       }
@@ -1683,7 +1715,7 @@
       "create" : {
         "!type" : "fn(type: string, properties?: ?) -> !custom:tabris_create",
         "!doc" : "Creates a native widget of a given type and returns its reference.",
-        "!url" : "https://tabrisjs.com/documentation/1.8/widget-basics#tabriscreatetype-properties",
+        "!url" : "https://tabrisjs.com/documentation/1.9/widget-basics#tabriscreatetype-properties",
         "!data": {
           "!lint": "tabrisCreate_lint",
           "!guess-type": "tabrisCreate_guessType"
@@ -1720,22 +1752,62 @@
     "setTimeout": {
       "!type": "fn(callback: fn(), delay: number, args?: ?) -> ?",
       "!doc": "Calls the given function with \"args\" (and all following parameters) after the specified delay. The actual delay may be slightly longer than the given one.",
-      "!url": "https://tabrisjs.com/documentation/1.8/w3c-api"
+      "!url": "https://tabrisjs.com/documentation/1.9/w3c-api"
     },
     "setInterval": {
       "!type": "fn(callback: fn(), delay: number, args?: ?) -> ?",
       "!doc": "Calls the given function with \"args\" (and all following parameters) repeatedly, each time waiting the given delay. The actual delay may be slightly longer than the given one.",
-      "!url": "https://tabrisjs.com/documentation/1.8/w3c-api"
+      "!url": "https://tabrisjs.com/documentation/1.9/w3c-api"
     },
     "clearTimeout": {
       "!type": "fn(id: number)",
       "!doc": "Cancels the running timeout associated with the given id. When given an invalid ID, nothing happens.",
-      "!url": "https://tabrisjs.com/documentation/1.8/w3c-api"
+      "!url": "https://tabrisjs.com/documentation/1.9/w3c-api"
     },
     "clearInterval": {
       "!type": "fn(id: number)",
       "!doc": "Cancels the running interval associated with the given id. When given an invalid ID, nothing happens.",
-      "!url": "https://tabrisjs.com/documentation/1.8/w3c-api"
+      "!url": "https://tabrisjs.com/documentation/1.9/w3c-api"
+    },
+    /**
+     * Promise definitions ported from: https://github.com/ternjs/tern/blob/master/defs/ecma6.json
+     */
+    "Promise": {
+      "!type": "fn(executor: fn(resolve: fn(value: ?), reject: fn(reason: ?)))",
+      "!doc": "The Promise object is used for deferred and asynchronous computations. A Promise is in one of the three states:",
+      "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
+      "prototype": {
+        "catch": {
+          "!doc": "The catch() method returns a Promise and deals with rejected cases only. It behaves the same as calling Promise.prototype.then(undefined, onRejected).",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch",
+          "!type": "fn(onRejected: fn(reason: ?)) -> +Promise"
+        },
+        "then": {
+          "!doc": "The then() method returns a Promise. It takes two arguments, both are callback functions for the success and failure cases of the Promise.",
+          "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then",
+          "!type": "fn(onFulfilled: fn(value: ?), onRejected: fn(reason: ?)) -> +Promise"
+        }
+      },
+      "all": {
+        "!type": "fn(iterable: [+Promise]) -> +Promise",
+        "!doc": "The Promise.all(iterable) method returns a promise that resolves when all of the promises in the iterable argument have resolved.",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all"
+      },
+      "race": {
+        "!type": "fn(iterable: [+Promise]) -> +Promise",
+        "!doc": "The Promise.race(iterable) method returns a promise that resolves or rejects as soon as one of the promises in the iterable resolves or rejects, with the value or reason from that promise.",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/race"
+      },
+      "reject": {
+        "!type": "fn(reason: ?) -> +Promise",
+        "!doc": "The Promise.reject(reason) method returns a Promise object that is rejected with the given reason.",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/reject"
+      },
+      "resolve": {
+        "!type": "fn(value: ?) -> +Promise",
+        "!doc": "The Promise.resolve(value) method returns a Promise object that is resolved with the given value. If the value is a thenable (i.e. has a then method), the returned promise will 'follow' that thenable, adopting its eventual state; otherwise the returned promise will be fulfilled with the value.",
+        "!url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/resolve"
+      }
     }
   };
 });
