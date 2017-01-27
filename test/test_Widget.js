@@ -77,7 +77,7 @@ var events = [
   {name: "touchstart", origin: "Widget"}
 ];
 
-module.exports = util.runCommonTests("Widget", {properties: properties, events: events, functions: functions, inheriting: inheriting});
+module.exports = util.runCommonTests("Button", {properties: properties, events: events, functions: functions, inheriting: inheriting});
 
 exports['test set() returns self'] = function() {
   util.assertCompletion("var button = tabris.create('Button', {});button.set('text', {}).", {

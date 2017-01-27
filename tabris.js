@@ -8,27 +8,14 @@
 })(function(infer, tern) {
   "use strict";
 
-  var preferQuote = "\"";
-
   var defaultRules = {
     "UnknownTabrisType" : {"severity" : "error"},
     "UnknownTabrisProperty" : {"severity" : "error"},
     "UnknownTabrisEvent" : {"severity" : "error"}
   };
 
-  var notCreatable = ["Widget", "WidgetCollection", "CanvasContext", "UI", "App", "Device", "Proxy"];
-
   function registerLints() {
     if (!tern.registerLint) return;
-
-    // validate tabris.create(
-    tern.registerLint("tabrisCreate_lint", function(node, addMessage, getRule) {
-      var argNode = node.arguments[0];
-      if (argNode) {
-        var cx = infer.cx(), types = cx.definitions.tabris["types"], typeName = argNode.value;
-        if (!types.hasProp(typeName)) addMessage(argNode, "Unknown tabris type '" + typeName + "'", defaultRules.UnknownTabrisType.severity);
-      }
-    });
 
     // validate widget.get(
     tern.registerLint("tabrisGet_lint", function(node, addMessage, getRule) {
@@ -112,17 +99,6 @@
     });
 
   }
-
-  infer.registerFunction("tabris_create", function(_self, args, argNodes) {
-    if (!argNodes || !argNodes.length || argNodes[0].type != "Literal" || typeof argNodes[0].value != "string")
-      return infer.ANull;
-    var cx = infer.cx(), server = cx.parent, name = argNodes[0].value, locals = cx.definitions.tabris["types"], tabrisType = locals.hasProp(name);
-    argNodes[0]._tabris = {"type" : "tabris_create"};
-    if (tabrisType) {
-      return new infer.Obj(tabrisType.getType().getProp("prototype").getType());
-    }
-    return infer.ANull;
-  });
 
   infer.registerFunction("tabris_Proxy_get", function(_self, args, argNodes) {
     if (!argNodes || !argNodes.length || argNodes[0].type != "Literal" || typeof argNodes[0].value != "string")
@@ -280,12 +256,6 @@
               proto = proto.proto;
             }
             break;
-          case "tabris_create":
-            var types = cx.definitions.tabris["types"];
-            types.props = omit(types.props, notCreatable);
-            overrideType = "string";
-            infer.forAllPropertiesOf(types, gather);
-            break;
         }
 
         return {start: tern.outputPos(query, file, argNode.start),
@@ -301,20 +271,6 @@
           })}
       }
     }
-  }
-
-  function omit(object, keys) {
-    var result = {};
-    for (var key in object) {
-      if (keys.indexOf(key) === -1) {
-        result[key] = object[key];
-      }
-    }
-    return result;
-  }
-
-  function maybeSet(obj, prop, val) {
-    if (val != null) obj[prop] = val;
   }
 
   var defs = {
@@ -1712,15 +1668,6 @@
       }
     },
     "tabris" : {
-      "create" : {
-        "!type" : "fn(type: string, properties?: ?) -> !custom:tabris_create",
-        "!doc" : "Creates a native widget of a given type and returns its reference.",
-        "!url" : "https://tabrisjs.com/documentation/1.9/widget-basics#tabriscreatetype-properties",
-        "!data": {
-          "!lint": "tabrisCreate_lint",
-          "!guess-type": "tabrisCreate_guessType"
-        }
-      },
       "app": {"!type": "+types.App"},
       "device": {"!type": "+types.Device"},
       "ui": {"!type": "+types.UI"},
@@ -1742,6 +1689,7 @@
       "ImageView": {"!type": "types.ImageView"},
       "ProgressBar": {"!type": "types.ProgressBar"},
       "RadioButton": {"!type": "types.RadioButton"},
+      "Slider": {"!type": "types.Slider"},
       "TabFolder": {"!type": "types.TabFolder"},
       "Tab": {"!type": "types.Tab"},
       "ToggleButton": {"!type": "types.ToggleButton"},

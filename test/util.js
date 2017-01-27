@@ -86,7 +86,7 @@ exports.assertFunction = function(type, fn) {
   if(fn.returnType && (typeCompletion.typesWithoutCompletion.indexOf(fn.returnType) < 0)) {
     assertFunctionWithReturnType(type, fn);
   } else {
-    exports.assertCompletion("var element = tabris.create('" + type + "', {});element.", {
+    exports.assertCompletion("var element = new tabris." + type + "();element.", {
       "name" : fn.name,
       "type" : fn.type,
       "origin" : "tabris"
@@ -130,7 +130,7 @@ exports.runCommonTests = function(type, testData) {
 };
 
 function assertFunctionWithReturnType(type, fn) {
-  exports.assertCompletion("tabris.create('" + type + "', {})." + fn.name + "().",
+  exports.assertCompletion("new tabris." + type + "()." + fn.name + "().",
     typeCompletion.types[fn.returnType], null, null, typeCompletion.types[fn.returnType].name);
 }
 
@@ -139,8 +139,8 @@ exports.assertProperty = function(type, fn) {
     assertPropertyWithReturnType(type, fn);
   } else {
     var nameWithQuote = "'" + fn.name + "'";
-    exports.assertCompletion("var element = tabris.create('" + type + "', {});element.get('" + fn.name, {
-      "name" : nameWithQuote,      
+    exports.assertCompletion("var element = new tabris." + type + "();element.get('" + fn.name, {
+      "name" : nameWithQuote,
       "type" : fn.type[0].toLowerCase() !== fn.type[0] ? "!propertyTypes." + fn.type : fn.type,
       "origin" : "tabris",
       "displayName" : fn.name
@@ -150,7 +150,7 @@ exports.assertProperty = function(type, fn) {
 
 function assertPropertyWithReturnType(type, fn) {
   exports.assertCompletion(
-    "var element = tabris.create('" + type + "', {});element.get('" + fn.name + "').",
+    "var element = new tabris." + type + "();element.get('" + fn.name + "').",
     typeCompletion.types[fn.type],
     null,
     null,
@@ -160,7 +160,7 @@ function assertPropertyWithReturnType(type, fn) {
 
 exports.assertEvent = function(type, eventName, origin) {
   var eventNameWithQuote = "'" + eventName + "'";
-  exports.assertCompletion("var element = tabris.create('" + type + "', {});element.on('" + eventName, {
+  exports.assertCompletion("var element = new tabris." + type + "();element.on('" + eventName, {
     "name" : eventNameWithQuote,
     "type" : "!events." + (origin ? origin : type) + "Events." + eventName,
     "origin" : "tabris",
